@@ -4,6 +4,16 @@
 
 **Recommended dataset:** [services_narnia_wise_rich_4000.json](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json) — 4,000 security-rich NDJSON events (37 linked attack events), ten simulated product sources, with process trees, C2 sessions, IAM activity, DLP and OT register events.
 
+### One command: download + refresh timestamps (no HEC token needed)
+
+Run this **single command** in the terminal on your Mac, Linux PC or lab VM (requires Python 3 and `curl`):
+
+```bash
+curl -fsSL -o services_narnia_wise_rich_4000.json https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json && curl -fsSL -o rebase_services_narnia_timestamps.py https://raw.githubusercontent.com/AnamulPalash/trxwise/main/tools/rebase_services_narnia_timestamps.py && python3 rebase_services_narnia_timestamps.py services_narnia_wise_rich_4000.json -o services_narnia_wise_latest.json --latest-minutes-ago 0
+```
+
+It downloads the 4,000-event dataset and Python refresh script, then creates **`services_narnia_wise_latest.json` in the current folder**, setting the newest event timestamp to current UTC time. The original file is left unchanged. Upload the generated `services_narnia_wise_latest.json` through **Splunk → Settings → Add Data → Upload**; select a dedicated Events index (`services_narnia_wise`) and configure the timestamp field `timestamp` with UTC format `%Y-%m-%dT%H:%M:%SZ` if the preview does not parse it. Set search time picker to **All time** to verify 4,000 records. A Web upload gives all events one real Splunk metadata sourcetype; per-product sourcetypes need HEC or other configuration.
+
 **[Full lab import + Wise investigation guide](docs/services_narnia_wise_rich_demo.md)** · [HEC importer](tools/import_services_narnia_hec.py) · [Timestamp refresh](tools/rebase_services_narnia_timestamps.py)
 
 Use Splunk Web upload for a quick start; use the provided HEC importer if you want each source record to receive its original Splunk metadata sourcetype. Wise still requires a compatible configured Ingest and/or Enrich integration, and source alerts eligible for investigations. All content is synthetic. Do not commit tokens or real customer telemetry to this public repository.
