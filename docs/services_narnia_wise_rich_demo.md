@@ -31,6 +31,16 @@ It is NDJSON (one JSON event per line; `.json` extension), not a single JSON arr
 | `scada:modbus` | 400 |
 | **Total** | **4,000** |
 
+### One command: download + refresh timestamps (no HEC token needed)
+
+Run this **single command** in the terminal on your Mac, Linux PC or lab VM (requires Python 3 and `curl`):
+
+```bash
+curl -fsSL -o services_narnia_wise_rich_4000.json https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json && curl -fsSL -o rebase_services_narnia_timestamps.py https://raw.githubusercontent.com/AnamulPalash/trxwise/main/tools/rebase_services_narnia_timestamps.py && python3 rebase_services_narnia_timestamps.py services_narnia_wise_rich_4000.json -o services_narnia_wise_latest.json --latest-minutes-ago 0
+```
+
+It downloads the 4,000-event dataset and Python refresh script, then creates **`services_narnia_wise_latest.json` in the current folder**, setting the newest event timestamp to current UTC time. The original file is left unchanged. Upload the generated `services_narnia_wise_latest.json` through **Splunk → Settings → Add Data → Upload**; select a dedicated Events index (`services_narnia_wise`) and configure the timestamp field `timestamp` with UTC format `%Y-%m-%dT%H:%M:%SZ` if the preview does not parse it. Set search time picker to **All time** to verify 4,000 records. A Web upload gives all events one real Splunk metadata sourcetype; per-product sourcetypes need HEC or other configuration.
+
 ## Option A — Import in Splunk Web (simplest)
 
 1. From the VM download the file:
