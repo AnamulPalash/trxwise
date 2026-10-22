@@ -1,5 +1,16 @@
 # Services Narnia — synthetic security telemetry
 
+## New: Detailed Services Narnia → Splunk → Wise lab
+
+**Recommended dataset:** [services_narnia_wise_rich_4000.json](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json) — 4,000 security-rich NDJSON events (37 linked attack events), ten simulated product sources, with process trees, C2 sessions, IAM activity, DLP and OT register events.
+
+**[Full lab import + Wise investigation guide](docs/services_narnia_wise_rich_demo.md)** · [HEC importer](tools/import_services_narnia_hec.py) · [Timestamp refresh](tools/rebase_services_narnia_timestamps.py)
+
+Use Splunk Web upload for a quick start; use the provided HEC importer if you want each source record to receive its original Splunk metadata sourcetype. Wise still requires a compatible configured Ingest and/or Enrich integration, and source alerts eligible for investigations. All content is synthetic. Do not commit tokens or real customer telemetry to this public repository.
+
+---
+
+
 This repository hosts fictional training data for a Trellix Wise / Splunk IT-to-OT investigation demonstration.
 
 ## Extended 10,000-event demo dataset
