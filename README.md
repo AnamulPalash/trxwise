@@ -4,7 +4,33 @@
 
 **Recommended dataset:** [services_narnia_wise_rich_4000.json](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json) — 4,000 security-rich NDJSON events (37 linked attack events), ten simulated product sources, with process trees, C2 sessions, IAM activity, DLP and OT register events.
 
-### One command: download + refresh timestamps (no HEC token needed)
+### Windows lab PC — install Python and generate a current-time JSON file
+
+If Windows says `python3 is not recognised`, use **PowerShell** (not the macOS/Linux command below). You only need to install Python once.
+
+**1. Install Python from PowerShell (Windows 10/11 with WinGet):**
+
+```powershell
+winget install --id Python.Python.3.14 --exact --accept-package-agreements --accept-source-agreements
+```
+
+**Close PowerShell completely, then open a new PowerShell window** so the Python command is added to your terminal environment. Confirm installation:
+
+```powershell
+python --version
+```
+
+If `python` is still unavailable, try `py -3 --version` and use `py -3` instead of `python` in the next command. If your VM doesn't have `winget` or the package installer is blocked, use the official [Python for Windows download](https://www.python.org/downloads/windows/) with your lab administrator's approval; use an install option that adds Python to PATH. Do not bypass VM software installation restrictions.
+
+**2. After Python is installed, paste this ONE PowerShell command to download the dataset and script and generate the updated file:**
+
+```powershell
+$ErrorActionPreference = 'Stop'; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json' -OutFile 'services_narnia_wise_rich_4000.json'; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AnamulPalash/trxwise/main/tools/rebase_services_narnia_timestamps.py' -OutFile 'rebase_services_narnia_timestamps.py'; python .\rebase_services_narnia_timestamps.py .\services_narnia_wise_rich_4000.json -o .\services_narnia_wise_latest.json --latest-minutes-ago 0
+```
+
+**3. In Splunk Web:** Upload `services_narnia_wise_latest.json` from that same PowerShell folder using **Settings → Add Data → Upload**. Verify that timestamps parse as UTC and use a clean lab index to prevent duplicates. This process does **not** need an HEC token.
+
+### macOS/Linux — one command: download + refresh timestamps (no HEC token needed)
 
 Run this **single command** in the terminal on your Mac, Linux PC or lab VM (requires Python 3 and `curl`):
 
