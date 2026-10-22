@@ -1,6 +1,6 @@
 [
   {
-    "_time": "2026-10-21T05:06:33.000000Z",
+    "timestamp": "2026-10-21T05:06:33Z",
     "index": "services_narnia",
     "sourcetype": "trellix:etp",
     "case_id": "SN-OT-2026-001",
@@ -21,7 +21,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:06:38.000000Z",
+    "timestamp": "2026-10-21T05:06:38Z",
     "index": "services_narnia",
     "sourcetype": "trellix:etp",
     "case_id": "SN-OT-2026-001",
@@ -42,7 +42,7 @@
     "primary_timeline": false
   },
   {
-    "_time": "2026-10-21T05:06:48.000000Z",
+    "timestamp": "2026-10-21T05:06:48Z",
     "index": "services_narnia",
     "sourcetype": "trellix:etp",
     "case_id": "SN-OT-2026-001",
@@ -63,7 +63,7 @@
     "primary_timeline": false
   },
   {
-    "_time": "2026-10-21T05:07:18.000000Z",
+    "timestamp": "2026-10-21T05:07:18Z",
     "index": "services_narnia",
     "sourcetype": "trellix:ens:exploit",
     "case_id": "SN-OT-2026-001",
@@ -87,7 +87,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:07:38.000000Z",
+    "timestamp": "2026-10-21T05:07:38Z",
     "index": "services_narnia",
     "sourcetype": "trellix:edr:event",
     "case_id": "SN-OT-2026-001",
@@ -112,7 +112,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:08:23.000000Z",
+    "timestamp": "2026-10-21T05:08:23Z",
     "index": "services_narnia",
     "sourcetype": "trellix:nx",
     "case_id": "SN-OT-2026-001",
@@ -137,7 +137,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:08:38.000000Z",
+    "timestamp": "2026-10-21T05:08:38Z",
     "index": "services_narnia",
     "sourcetype": "pan:threat",
     "case_id": "SN-OT-2026-001",
@@ -161,7 +161,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:09:23.000000Z",
+    "timestamp": "2026-10-21T05:09:23Z",
     "index": "services_narnia",
     "sourcetype": "Okta:Security",
     "case_id": "SN-OT-2026-001",
@@ -183,7 +183,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:10:03.000000Z",
+    "timestamp": "2026-10-21T05:10:03Z",
     "index": "services_narnia",
     "sourcetype": "WinEventLog:Security",
     "case_id": "SN-OT-2026-001",
@@ -205,7 +205,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:10:43.000000Z",
+    "timestamp": "2026-10-21T05:10:43Z",
     "index": "services_narnia",
     "sourcetype": "trellix:dlp:incident",
     "case_id": "SN-OT-2026-001",
@@ -228,7 +228,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:11:43.000000Z",
+    "timestamp": "2026-10-21T05:11:43Z",
     "index": "services_narnia",
     "sourcetype": "trellix:ips",
     "case_id": "SN-OT-2026-001",
@@ -252,7 +252,7 @@
     "primary_timeline": true
   },
   {
-    "_time": "2026-10-21T05:12:33.000000Z",
+    "timestamp": "2026-10-21T05:12:33Z",
     "index": "services_narnia",
     "sourcetype": "scada:modbus",
     "case_id": "SN-OT-2026-001",
