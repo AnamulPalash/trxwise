@@ -4,7 +4,21 @@
 
 **Recommended dataset:** [services_narnia_wise_rich_4000.json](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json) — 4,000 security-rich NDJSON events (37 linked attack events), ten simulated product sources, with process trees, C2 sessions, IAM activity, DLP and OT register events.
 
-### Windows lab PC — install Python and generate a current-time JSON file
+### Windows PowerShell — no Python or winget required (recommended for lab VMs)
+
+If **`winget`** or **`python3`** is not recognised, use this **single PowerShell command** instead. It requires **no installation and no admin rights**, provided the lab permits HTTPS downloads to `raw.githubusercontent.com`. Open **Windows PowerShell** (not Command Prompt / cmd.exe), copy the whole line and press Enter:
+
+```powershell
+$ErrorActionPreference='Stop'; $src='services_narnia_wise_rich_4000.json'; $out='services_narnia_wise_latest.json'; Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json' -OutFile $src; $lines=[IO.File]::ReadAllLines((Join-Path (Get-Location).Path $src)); $rx=[regex]'"timestamp":"([^"]+)"'; $max=[DateTimeOffset]::MinValue; foreach($line in $lines){$match=$rx.Match($line);if(-not $match.Success){throw 'Missing timestamp in a JSON record'};$ts=[DateTimeOffset]::Parse($match.Groups[1].Value);if($ts -gt $max){$max=$ts}}; $shift=[DateTimeOffset]::UtcNow-$max; $updated=@(foreach($line in $lines){$match=$rx.Match($line);$newTime=([DateTimeOffset]::Parse($match.Groups[1].Value).Add($shift)).UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ssZ');$line.Replace($match.Value,('"timestamp":"'+$newTime+'"'))}); [IO.File]::WriteAllLines((Join-Path (Get-Location).Path $out),[string[]]$updated,[Text.UTF8Encoding]::new($false)); Write-Host ('Created '+$out+' with '+$updated.Count+' events; latest timestamp '+([DateTimeOffset]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')))
+```
+
+This downloads the complete **4,000-event detailed JSON**, reads the existing ISO UTC timestamps, shifts them by the same interval so the newest event is approximately **now (UTC)**, and saves `services_narnia_wise_latest.json` in the **current PowerShell folder**. It retains all original security fields and 37 correlated attack events; the published original is unchanged. There is no HEC token requirement.
+
+**Import:** In Splunk Web go to **Settings → Add Data → Upload**, select `services_narnia_wise_latest.json`, use sourcetype `services_narnia_json` with timestamp field `timestamp` / format `%Y-%m-%dT%H:%M:%SZ` / timezone UTC if needed. Use a clean index named `services_narnia_wise`, set the search time picker to **All time** and check `index=services_narnia_wise earliest=0 | stats count` returns **4,000**. A single Web upload still assigns one Splunk metadata sourcetype to every event.
+
+This method uses built-in Windows PowerShell and does **not** change script execution policy. If the download is blocked by your organisation's proxy or lab controls, ask your lab administrator for an approved transfer path rather than bypassing security restrictions.
+
+### Alternative — install Python on Windows (optional)
 
 If Windows says `python3 is not recognised`, use **PowerShell** (not the macOS/Linux command below). You only need to install Python once.
 
