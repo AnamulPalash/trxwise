@@ -2,6 +2,31 @@
 
 This repository hosts fictional training data for a Trellix Wise / Splunk IT-to-OT investigation demonstration.
 
+## Extended 10,000-event demo dataset
+
+- **[Download the 10,000-event file](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_10000_events.json)** (NDJSON, 10,000 events, about 2 MB)
+- Runs from **2026-10-15 03:35 UTC** through **2026-10-22 03:35 UTC**, including the 12-event phishing-to-OT attack around **2026-10-22 03:15–03:21 UTC**.
+- Sourcetype proportions: Trellix ENS 1,000; EDR 1,000; NX 2,000; Palo Alto 1,500; Okta 750; Windows Security 750; Trellix Email 1,000; DLP 500; IPS 500; and Modbus 1,000.
+- File has one JSON object per line and uses ISO UTC `timestamp` (not Splunk's reserved `_time`).
+- Recommended: create **a new index `services_narnia_10k`** and reuse the `services_narnia_json` sourcetype **only if** its timestamp extraction preview is correct. The `sourcetype` inside each JSON event is a data field; a single Web upload still assigns one metadata sourcetype to the whole file.
+- Set Splunk search time picker to **All time** initially. The US time zone may display the attack as **21 October 2026** rather than 22 October.
+
+Download on a lab VM:
+
+```bash
+curl -fL -o services_narnia_10000_events.json https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_10000_events.json
+```
+
+Validation query after import:
+
+```spl
+index=services_narnia_10k earliest=0
+| stats count as events min(_time) as earliest max(_time) as latest
+| convert ctime(earliest) ctime(latest)
+```
+
+Expected event count: **10,000**. The dataset contains synthetic benign and alert activity; none is from actual endpoints or PLCs.
+
 ## Direct downloads for lab VMs
 
 - **[Splunk import: newline-delimited JSON](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_security_events.json)**
