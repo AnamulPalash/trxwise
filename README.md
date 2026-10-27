@@ -3,8 +3,8 @@
 ## Federal SOC → Splunk → Wise lab: 2,000-event dataset
 
 Use this dataset for the National Services Authority federal SOC simulation.
-It is **fictional synthetic training telemetry**: 2,000 NDJSON events, 20
-linked scenario events and ten source categories. It contains no live
+It is **fictional synthetic training telemetry**: 2,000 NDJSON events, 25
+linked investigation and workflow events across 13 source categories. It contains no live
 government telemetry, credentials, payloads or external actions.
 
 - **[Download the federal 2,000-event dataset](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/national_services_authority_wise_federal_2000.json)**
@@ -35,12 +35,17 @@ government telemetry, credentials, payloads or external actions.
    | stats count as total dc(sourcetype) as source_categories values(synthetic) as synthetic_flags
    ```
 
-   Expected: `total=2000`, `source_categories=10`, `synthetic_flags=true`.
+   Expected: `total=2000`, `source_categories=13`, `synthetic_flags=true`.
 
 One-file upload assigns a single Splunk metadata sourcetype. The event-level
 `sourcetype` field remains available for searches. The scenario demonstrates a
 lab flow through Splunk and Wise; it does not claim a production connector,
 automatic Wise investigation or Wise control enforcement.
+
+The 25 linked investigation and workflow records include a synthetic Wise
+response plan, human analyst approval, customer-owned action, verification and
+training-only case closure. These workflow records are marked
+`native_telemetry: false`; they are not vendor-native telemetry.
 
 ## New: Detailed Services Narnia → Splunk → Wise lab
 

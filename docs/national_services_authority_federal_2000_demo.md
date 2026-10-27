@@ -10,14 +10,31 @@ Case `FDC-SOC-2026-1027` follows a phishing email to a user workstation,
 inert PowerShell telemetry, synthetic process-injection indicators, C2-like
 network records, session-reuse evidence, lateral movement to a privileged jump
 host, blocked data transfer, and denied access to a protected citizen-services
-application. The final analyst decision is evidence-led and human approved.
+application. The final workflow records the synthetic Wise response plan,
+analyst approval, customer-owned action, verification and case closure.
 
 - 2,000 NDJSON records, one object per line
-- 20 linked attack events across ten source categories
+- 25 linked investigation and workflow events across 13 source categories:
+  ten simulated security telemetry categories and three simulated workflow
+  categories
 - Every record includes `synthetic: true` and
   `simulation_origin: synthetic_training_telemetry`
 - No payloads, live credentials, real IPs, real government data, or external
   network actions are included
+
+## Response and governance evidence
+
+The final six records make the simulation's response sequence inspectable.
+They are deliberately marked `native_telemetry: false`: they are fictional
+workflow records, not vendor-native Wise, SOC or control telemetry.
+
+| Event IDs | Stage | What the record demonstrates |
+| --- | --- | --- |
+| `FDC-0000020` | `wise_response_plan` | A synthetic, source-linked Wise response recommendation with evidence IDs, confidence and an explicit uncertainty. |
+| `FDC-0000021` | `analyst_approval` | A fictional federal SOC analyst approval, including approved action IDs and rationale. |
+| `FDC-0000022` to `FDC-0000023` | `customer_response_action` | Fictional customer-owned network block and identity-session revocation records, each tied to the approval and change ticket. |
+| `FDC-0000024` | `response_verification` | A synthetic verification result and its evidence basis. |
+| `FDC-0000025` | `case_closure` | A training-only closure record with the retained hunt question. |
 
 ## Import with Splunk Web, no HEC required
 
@@ -46,7 +63,7 @@ index=federal_wise earliest=0
 | stats count as total dc(sourcetype) as source_categories values(synthetic) as synthetic_flags
 ```
 
-Expected: `total=2000`, `source_categories=10`, `synthetic_flags=true`.
+Expected: `total=2000`, `source_categories=13`, `synthetic_flags=true`.
 
 ```spl
 index=federal_wise earliest=0 case_id="FDC-SOC-2026-1027"
@@ -62,6 +79,12 @@ index=federal_wise earliest=0 case_id="FDC-SOC-2026-1027" dest_ip="203.0.113.77"
 ```spl
 index=federal_wise earliest=0 case_id="FDC-SOC-2026-1027" action="blocked"
 | table _time stage product file_name resource action reason
+```
+
+```spl
+index=federal_wise earliest=0 case_id="FDC-SOC-2026-1027"
+stage IN ("wise_response_plan", "analyst_approval", "customer_response_action", "response_verification", "case_closure")
+| table _time event_id stage source_system action approval_id response_action_id evidence_event_ids reason verification_result case_status
 ```
 
 ## Wise lab boundary
