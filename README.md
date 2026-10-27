@@ -1,5 +1,47 @@
 # Services Narnia — synthetic security telemetry
 
+## Federal SOC → Splunk → Wise lab: 2,000-event dataset
+
+Use this dataset for the National Services Authority federal SOC simulation.
+It is **fictional synthetic training telemetry**: 2,000 NDJSON events, 20
+linked scenario events and ten source categories. It contains no live
+government telemetry, credentials, payloads or external actions.
+
+- **[Download the federal 2,000-event dataset](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/national_services_authority_wise_federal_2000.json)**
+- **[Open the full federal lab guide](docs/national_services_authority_federal_2000_demo.md)**
+- **[Open the Windows PowerShell download and timestamp-refresh script](tools/download_national_services_authority_federal_2000.ps1)**
+
+### Quick import into Splunk Web
+
+1. In Windows PowerShell, download and run the provided script. It downloads
+   the dataset and shifts all synthetic timestamps together so the newest
+   event is current for a short Splunk lookback window.
+
+   ```powershell
+   Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/AnamulPalash/trxwise/main/tools/download_national_services_authority_federal_2000.ps1' -OutFile '.\download_national_services_authority_federal_2000.ps1'
+   .\download_national_services_authority_federal_2000.ps1
+   ```
+
+2. In Splunk Web, go to **Settings → Add Data → Upload** and upload
+   `national_services_authority_wise_federal_latest.json`.
+3. Select `_json`. If Splunk does not parse time automatically, use field
+   `timestamp`, format `%Y-%m-%dT%H:%M:%SZ`, timezone UTC.
+4. Send the events to a new lab index such as `federal_wise`, then set the
+   search time picker to **All time**.
+5. Confirm the import:
+
+   ```spl
+   index=federal_wise earliest=0
+   | stats count as total dc(sourcetype) as source_categories values(synthetic) as synthetic_flags
+   ```
+
+   Expected: `total=2000`, `source_categories=10`, `synthetic_flags=true`.
+
+One-file upload assigns a single Splunk metadata sourcetype. The event-level
+`sourcetype` field remains available for searches. The scenario demonstrates a
+lab flow through Splunk and Wise; it does not claim a production connector,
+automatic Wise investigation or Wise control enforcement.
+
 ## New: Detailed Services Narnia → Splunk → Wise lab
 
 **Recommended dataset:** [services_narnia_wise_rich_4000.json](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_rich_4000.json) — 4,000 security-rich NDJSON events (37 linked attack events), ten simulated product sources, with process trees, C2 sessions, IAM activity, DLP and OT register events.
