@@ -1,5 +1,110 @@
 # Services Narnia — synthetic security telemetry
 
+## New: 300-event Wise Investigation Agent validation dataset
+
+**[Download the original 300-event dataset](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_investigation_300.json)** · [View dataset](data/services_narnia_wise_investigation_300.json) · [Timestamp refresh script](tools/rebase_services_narnia_timestamps.py)
+
+Use this small synthetic dataset to test fresh investigations after restoring Wise AI agents. It contains 300 newline-delimited JSON (NDJSON) events: 264 background events and 36 correlated events, including three designated alerts across ten simulated security products.
+
+| Case ID | Alert ID | Expected assessment |
+| --- | --- | --- |
+| SN-INV-2026-1125-A | SN-ALERT-1125-A | Suspicious endpoint activity and attempted data transfer; malicious activity supported by correlated evidence |
+| SN-INV-2026-1125-B | SN-ALERT-1125-B | Authorised maintenance; likely benign/false positive |
+| SN-INV-2026-1125-C | SN-ALERT-1125-C | Repeated authentication and MFA failures; suspicious activity, successful compromise unconfirmed |
+
+### Step 1 — Download and fix timestamps before every fresh import
+
+The published file has fixed UTC timestamps. Refresh them immediately before uploading so Splunk and Wise can find recent events. The refresh moves the entire timeline by the same interval, preserves the event order, identifiers and security fields, and writes a separate file. It does not modify the published dataset.
+
+**macOS/Linux (Python 3 and curl required):** copy this single command into Terminal on your Mac or Linux machine. No SSH access to Splunk or HEC token is needed.
+
+```bash
+curl -fsSL -o services_narnia_wise_investigation_300.json https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_investigation_300.json && curl -fsSL -o rebase_services_narnia_timestamps.py https://raw.githubusercontent.com/AnamulPalash/trxwise/main/tools/rebase_services_narnia_timestamps.py && python3 rebase_services_narnia_timestamps.py services_narnia_wise_investigation_300.json -o wise_investigation_latest.json --latest-minutes-ago 0
+```
+
+**Windows PowerShell (no Python, winget or admin rights required):** copy the following block into PowerShell.
+
+```powershell
+$ErrorActionPreference = 'Stop'
+$src = 'services_narnia_wise_investigation_300.json'
+$out = 'wise_investigation_latest.json'
+Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_investigation_300.json' -OutFile $src
+$lines = [IO.File]::ReadAllLines((Join-Path (Get-Location).Path $src))
+$rx = [regex]'"timestamp":"([^"]+)"'
+$max = [DateTimeOffset]::MinValue
+foreach ($line in $lines) {
+    $match = $rx.Match($line)
+    if (-not $match.Success) { throw 'Missing timestamp in a JSON record' }
+    $ts = [DateTimeOffset]::Parse($match.Groups[1].Value)
+    if ($ts -gt $max) { $max = $ts }
+}
+if ($lines.Count -ne 300) { throw "Expected 300 events; found $($lines.Count)" }
+$shift = [DateTimeOffset]::UtcNow - $max
+$updated = @(foreach ($line in $lines) {
+    $match = $rx.Match($line)
+    $newTime = ([DateTimeOffset]::Parse($match.Groups[1].Value).Add($shift)).UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ssZ')
+    $line.Replace($match.Value, ('"timestamp":"' + $newTime + '"'))
+})
+[IO.File]::WriteAllLines((Join-Path (Get-Location).Path $out), [string[]]$updated, [Text.UTF8Encoding]::new($false))
+Write-Host "Created $out with $($updated.Count) events."
+```
+
+Both methods create **wise_investigation_latest.json** in the current folder. The newest event is approximately current UTC time; the full timeline spans 47 minutes. The three alert timestamps are approximately 21, 13 and 0 minutes before the newest event. Allow enough lookback for the oldest alert plus the import and polling delay.
+
+### Step 2 — Import into Splunk Web
+
+1. Open **Settings → Add Data → Upload** and select **wise_investigation_latest.json** (not the original fixed-timestamp file).
+2. Select sourcetype **_json**, or an existing JSON sourcetype with correct parsing. Verify that each line becomes one event.
+3. If timestamps are not parsed correctly, open **Timestamp → Advanced** and set timestamp field **timestamp**, format **%Y-%m-%dT%H:%M:%SZ**, timezone **UTC**. Confirm the preview before submitting.
+4. Select the existing lab index **wise_data** if this is the index configured in Wise, or substitute your own configured lab index. Existing data does not need to be deleted. Click Review and Submit.
+5. Set the search time picker to **All time** for initial validation. Upload only once for this test: refreshing timestamps does not create new event or alert IDs, and repeated uploads may create duplicates or be deduplicated by Wise.
+
+A single Splunk Web upload assigns one metadata sourcetype to all events. The JSON **product** field distinguishes simulated products. Use an appropriate HEC workflow if distinct Splunk metadata sourcetypes are required.
+
+### Step 3 — Verify the imported events
+
+**Count events, distinct event IDs and products, and check the latest event time:**
+
+```spl
+index=wise_data earliest=0 dataset_id="SN-INV-2026-1125"
+| stats count as events dc(event_id) as unique_events dc(product) as products min(_time) as oldest max(_time) as newest
+| convert ctime(oldest) ctime(newest)
+```
+
+Expected after one import: **300 events, 300 unique events, 10 products**. Verify that the newest time is recent.
+
+**Find the three alerts:**
+
+```spl
+index=wise_data earliest=0 dataset_id="SN-INV-2026-1125" is_alert=true
+| table _time alert_id alert_name severity host user src_ip dest_ip
+| sort 0 _time
+```
+
+Expected: **3 alerts**. If the sourcetype does not extract fields automatically, add JSON extraction with **| spath** before filtering, using an initial search on the index.
+
+**Review the correlated case timelines:**
+
+```spl
+index=wise_data earliest=0 dataset_id="SN-INV-2026-1125" case_id=*
+| sort 0 _time
+| table _time case_id product host signature severity action
+```
+
+Expected: **36 correlated events**, 12 per case.
+
+### Step 4 — Trigger and validate Wise investigations
+
+- In Wise, verify that the Splunk integration is connected, Ingest is enabled and Enrich can query the lab index.
+- Check the configured ingest query, alert mapping, scheduling/lookback and deduplication rules. The three records marked **is_alert=true** are synthetic alert candidates, not guaranteed native Splunk ES notable events. An eligible alert must match the installed connector's ingest criteria.
+- For an initial controlled test, use the configured alert workflow for case A (alert **SN-ALERT-1125-A**) first, then cases B and C. If needed, use a lab-only saved search that selects the candidate records, and map its output to the connector's supported alert format. Do not change production ingest filters.
+- Use at least a 60-minute initial lookback if supported, or a longer window if import/polling is delayed. Verify the alerts are in that window before triggering.
+- Confirm a new investigation appears and completes; review evidence, executed searches and verdict against the case expectations. The expected assessments are test objectives, not guaranteed Wise verdicts.
+
+**Important:** importing telemetry into Splunk alone does not automatically trigger Wise investigations. The correct ingest/alert configuration depends on your installed Wise connector. Existing inconclusive investigations are not modified by this dataset. This is fictional lab telemetry; no live customer data or credentials are included.
+
+---
+
 ## Federal SOC → Splunk → Wise lab: 2,000-event dataset
 
 Use this dataset for the National Services Authority federal SOC simulation.
