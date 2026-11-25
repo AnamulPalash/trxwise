@@ -1,5 +1,21 @@
 # Services Narnia — synthetic security telemetry
 
+## SOC Command Centre — interactive Splunk dashboard
+
+**[Open Dashboard Studio JSON](dashboards/services_narnia_soc_command_centre.json)** · **[Raw JSON — copy or download](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/dashboards/services_narnia_soc_command_centre.json)** · **[Installation and validation guide](docs/services_narnia_soc_dashboard.md)**
+
+A 12-panel dashboard for the 300-event investigation dataset in `wise_data`, with time, endpoint and severity filters, event totals, security product breakdown, alert triage, MITRE ATT&CK tags and correlated case timelines. Live SPL searches; no additional data import or HEC token required. Source alerts are not live Wise verdicts.
+
+On macOS, download and copy the dashboard source in one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/AnamulPalash/trxwise/main/dashboards/services_narnia_soc_command_centre.json | pbcopy
+```
+
+In Splunk Web: **Search & Reporting → Dashboards → Create New Dashboard → Dashboard Studio → Absolute**. Open the source editor, replace the entire JSON with the copied source, save, and select the time range covering your data (All time if needed). Expected: 300 unique events, 10 products, 3 designated alerts, 2 high-severity alerts. See the full guide for Windows instructions and troubleshooting.
+
+---
+
 ## New: 300-event Wise Investigation Agent validation dataset
 
 **[Download the original 300-event dataset](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/data/services_narnia_wise_investigation_300.json)** · [View dataset](data/services_narnia_wise_investigation_300.json) · [Timestamp refresh script](tools/rebase_services_narnia_timestamps.py)
