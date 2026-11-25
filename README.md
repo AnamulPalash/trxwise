@@ -6,11 +6,19 @@
 
 A 12-panel dashboard for the 300-event investigation dataset in `wise_data`, with time, endpoint and severity filters, event totals, security product breakdown, alert triage, MITRE ATT&CK tags and correlated case timelines. Live SPL searches; no additional data import or HEC token required. Source alerts are not live Wise verdicts.
 
-On macOS, download and copy the dashboard source in one command:
+**macOS only (run locally on your Mac, not in an SSH session):** copy the dashboard source in one command:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/AnamulPalash/trxwise/main/dashboards/services_narnia_soc_command_centre.json | pbcopy
 ```
+
+**Debian/Ubuntu/Linux (including SSH):** `pbcopy` is not a Linux command. Download the JSON file instead:
+
+```bash
+curl -fsSL -o services_narnia_soc_command_centre.json https://raw.githubusercontent.com/AnamulPalash/trxwise/main/dashboards/services_narnia_soc_command_centre.json
+```
+
+To copy the source without installing clipboard tools, open the [raw dashboard JSON](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/dashboards/services_narnia_soc_command_centre.json) in the browser where you use Splunk Web, select all and copy. Alternatively, use GitHub's **Copy raw file** button on the dashboard file page. Paste into the Dashboard Studio source editor, not the SPL search bar.
 
 In Splunk Web: **Search & Reporting → Dashboards → Create New Dashboard → Dashboard Studio → Absolute**. Open the source editor, replace the entire JSON with the copied source, save, and select the time range covering your data (All time if needed). Expected: 300 unique events, 10 products, 3 designated alerts, 2 high-severity alerts. See the full guide for Windows instructions and troubleshooting.
 
