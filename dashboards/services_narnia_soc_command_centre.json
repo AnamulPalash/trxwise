@@ -153,12 +153,11 @@
   },
   "visualizations": {
     "viz_section_overview": {
-      "type": "splunk.text",
+      "type": "splunk.markdown",
       "options": {
-        "content": "01  /  TELEMETRY OVERVIEW",
-        "fontSize": 18,
-        "fontWeight": "bold",
-        "textColor": "#B5C7DD"
+        "markdown": "**01  /  TELEMETRY OVERVIEW**",
+        "fontColor": "#B5C7DD",
+        "fontSize": "large"
       }
     },
     "viz_total": {
@@ -266,12 +265,11 @@
       "showLastUpdated": false
     },
     "viz_section_evidence": {
-      "type": "splunk.text",
+      "type": "splunk.markdown",
       "options": {
-        "content": "02  /  ALERT TRIAGE & EVIDENCE",
-        "fontSize": 18,
-        "fontWeight": "bold",
-        "textColor": "#B5C7DD"
+        "markdown": "**02  /  ALERT TRIAGE & EVIDENCE**",
+        "fontColor": "#B5C7DD",
+        "fontSize": "large"
       }
     },
     "viz_alert_table": {
