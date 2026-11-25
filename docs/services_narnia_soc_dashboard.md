@@ -11,13 +11,15 @@ Interactive Splunk Dashboard Studio dashboard for the synthetic 300-event Trelli
 5. Save the source and the dashboard. Use the dark theme if available for the intended presentation.
 6. Leave Endpoint and Event severity set to All; use Last 24 hours or select a time range covering the dataset. If the dataset is older, choose All time. Set the dashboard's permissions to private or share only with authorised lab users.
 
-On macOS/Linux, download and copy to the Mac clipboard:
+On macOS/Linux, download the JSON file. The optional `pbcopy` command works **only in a local macOS terminal**, not on Debian/Ubuntu or in an SSH session to Linux:
 
 ```bash
 curl -fsSL -o services_narnia_soc_command_centre.json https://raw.githubusercontent.com/AnamulPalash/trxwise/main/dashboards/services_narnia_soc_command_centre.json
 # macOS only:
 pbcopy < services_narnia_soc_command_centre.json
 ```
+
+On Debian/Ubuntu/Linux, run only the `curl` download command above. To copy the JSON without installing clipboard utilities, open the [raw JSON](https://raw.githubusercontent.com/AnamulPalash/trxwise/main/dashboards/services_narnia_soc_command_centre.json) in your browser or use GitHub's **Copy raw file** button. Paste the complete JSON into the Dashboard Studio source editor. A remote SSH terminal does not normally share the local desktop clipboard.
 
 On Windows PowerShell:
 
