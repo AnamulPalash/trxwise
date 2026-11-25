@@ -1,0 +1,609 @@
+{
+  "title": "Services Narnia | SOC Command Centre",
+  "description": "Synthetic Splunk telemetry for Trellix Wise lab validation. Source alert severity is not a Wise verdict. Default scope: SN-INV-2026-1125 in wise_data.",
+  "inputs": {
+    "input_time": {
+      "type": "input.timerange",
+      "title": "Time range",
+      "options": {
+        "token": "global_time",
+        "defaultValue": "-24h,now"
+      }
+    },
+    "input_host": {
+      "type": "input.dropdown",
+      "title": "Endpoint",
+      "options": {
+        "token": "endpoint",
+        "defaultValue": "*",
+        "items": [
+          {
+            "label": "All endpoints",
+            "value": "*"
+          },
+          {
+            "label": "SN-WS-41 | endpoint case",
+            "value": "SN-WS-41"
+          },
+          {
+            "label": "SN-WS-42 | maintenance case",
+            "value": "SN-WS-42"
+          },
+          {
+            "label": "SN-WS-43 | authentication case",
+            "value": "SN-WS-43"
+          },
+          {
+            "label": "SN-WS-01",
+            "value": "SN-WS-01"
+          },
+          {
+            "label": "SN-WS-02",
+            "value": "SN-WS-02"
+          },
+          {
+            "label": "SN-WS-03",
+            "value": "SN-WS-03"
+          },
+          {
+            "label": "SN-WS-04",
+            "value": "SN-WS-04"
+          },
+          {
+            "label": "SN-WS-05",
+            "value": "SN-WS-05"
+          },
+          {
+            "label": "SN-WS-06",
+            "value": "SN-WS-06"
+          },
+          {
+            "label": "SN-WS-07",
+            "value": "SN-WS-07"
+          },
+          {
+            "label": "SN-WS-08",
+            "value": "SN-WS-08"
+          },
+          {
+            "label": "SN-WS-09",
+            "value": "SN-WS-09"
+          },
+          {
+            "label": "SN-WS-10",
+            "value": "SN-WS-10"
+          },
+          {
+            "label": "SN-WS-11",
+            "value": "SN-WS-11"
+          },
+          {
+            "label": "SN-WS-12",
+            "value": "SN-WS-12"
+          },
+          {
+            "label": "SN-WS-13",
+            "value": "SN-WS-13"
+          },
+          {
+            "label": "SN-WS-14",
+            "value": "SN-WS-14"
+          },
+          {
+            "label": "SN-WS-15",
+            "value": "SN-WS-15"
+          },
+          {
+            "label": "SN-WS-16",
+            "value": "SN-WS-16"
+          },
+          {
+            "label": "SN-WS-17",
+            "value": "SN-WS-17"
+          },
+          {
+            "label": "SN-WS-18",
+            "value": "SN-WS-18"
+          }
+        ]
+      }
+    },
+    "input_severity": {
+      "type": "input.dropdown",
+      "title": "Event severity",
+      "options": {
+        "token": "severity_filter",
+        "defaultValue": "*",
+        "items": [
+          {
+            "label": "All severities",
+            "value": "*"
+          },
+          {
+            "label": "High",
+            "value": "high"
+          },
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Low",
+            "value": "low"
+          },
+          {
+            "label": "Informational",
+            "value": "informational"
+          }
+        ]
+      }
+    }
+  },
+  "defaults": {
+    "dataSources": {
+      "ds.search": {
+        "options": {
+          "queryParameters": {
+            "earliest": "$global_time.earliest$",
+            "latest": "$global_time.latest$"
+          }
+        }
+      }
+    }
+  },
+  "visualizations": {
+    "viz_section_overview": {
+      "type": "splunk.text",
+      "options": {
+        "content": "01  /  TELEMETRY OVERVIEW",
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "textColor": "#B5C7DD"
+      }
+    },
+    "viz_total": {
+      "type": "splunk.singlevalue",
+      "title": "Unique events",
+      "description": "Distinct event IDs in the current filters.",
+      "dataSources": {
+        "primary": "ds_total"
+      },
+      "options": {
+        "showSparkline": false,
+        "showTrendIndicator": false
+      },
+      "showLastUpdated": false
+    },
+    "viz_products": {
+      "type": "splunk.singlevalue",
+      "title": "Security products",
+      "description": "Simulated product sources, not metadata sourcetypes.",
+      "dataSources": {
+        "primary": "ds_products"
+      },
+      "options": {
+        "showSparkline": false,
+        "showTrendIndicator": false
+      },
+      "showLastUpdated": false
+    },
+    "viz_alerts": {
+      "type": "splunk.singlevalue",
+      "title": "Designated alerts",
+      "description": "Synthetic alert candidates, not Wise investigations.",
+      "dataSources": {
+        "primary": "ds_alerts"
+      },
+      "options": {
+        "showSparkline": false,
+        "showTrendIndicator": false
+      },
+      "showLastUpdated": false
+    },
+    "viz_high": {
+      "type": "splunk.singlevalue",
+      "title": "High-severity alerts",
+      "description": "Source severity, not a Wise verdict.",
+      "dataSources": {
+        "primary": "ds_high"
+      },
+      "options": {
+        "showSparkline": false,
+        "showTrendIndicator": false,
+        "majorColor": "#F98C83"
+      },
+      "showLastUpdated": false
+    },
+    "viz_timeline": {
+      "type": "splunk.column",
+      "title": "Event activity over time",
+      "description": "Time is the indexed Splunk event time.",
+      "dataSources": {
+        "primary": "ds_timeline"
+      },
+      "options": {
+        "stackMode": "stacked",
+        "legendDisplay": "bottom"
+      },
+      "showLastUpdated": false
+    },
+    "viz_severity": {
+      "type": "splunk.pie",
+      "title": "Events by severity",
+      "description": "Source-event severity across the filtered data.",
+      "dataSources": {
+        "primary": "ds_severity"
+      },
+      "options": {
+        "showDonutHole": true,
+        "labelDisplay": "valuesAndPercentage"
+      },
+      "showLastUpdated": false
+    },
+    "viz_products_chart": {
+      "type": "splunk.bar",
+      "title": "Telemetry by security product",
+      "description": "Product field extracted from the original JSON.",
+      "dataSources": {
+        "primary": "ds_products_chart"
+      },
+      "options": {
+        "legendDisplay": "off"
+      },
+      "showLastUpdated": false
+    },
+    "viz_activity": {
+      "type": "splunk.pie",
+      "title": "Background vs correlated evidence",
+      "description": "Case-tagged events include the designated alerts.",
+      "dataSources": {
+        "primary": "ds_activity"
+      },
+      "options": {
+        "showDonutHole": true,
+        "labelDisplay": "valuesAndPercentage"
+      },
+      "showLastUpdated": false
+    },
+    "viz_section_evidence": {
+      "type": "splunk.text",
+      "options": {
+        "content": "02  /  ALERT TRIAGE & EVIDENCE",
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "textColor": "#B5C7DD"
+      }
+    },
+    "viz_alert_table": {
+      "type": "splunk.table",
+      "title": "Alert triage queue",
+      "description": "Synthetic source alerts; no live Wise verdict is displayed.",
+      "dataSources": {
+        "primary": "ds_alert_table"
+      },
+      "options": {
+        "count": 10
+      },
+      "showLastUpdated": false
+    },
+    "viz_mitre": {
+      "type": "splunk.bar",
+      "title": "MITRE ATT&CK technique tags",
+      "description": "Counts of supplied synthetic technique labels.",
+      "dataSources": {
+        "primary": "ds_mitre"
+      },
+      "options": {
+        "legendDisplay": "off"
+      },
+      "showLastUpdated": false
+    },
+    "viz_network": {
+      "type": "splunk.table",
+      "title": "Network and data-control evidence",
+      "description": "Case-linked network/DLP records and blocked or denied events.",
+      "dataSources": {
+        "primary": "ds_network"
+      },
+      "options": {
+        "count": 8
+      },
+      "showLastUpdated": false
+    },
+    "viz_case_table": {
+      "type": "splunk.table",
+      "title": "Correlated case timeline",
+      "description": "Select an endpoint to follow its evidence timeline. Source labels are fictional.",
+      "dataSources": {
+        "primary": "ds_case_table"
+      },
+      "options": {
+        "count": 12
+      },
+      "showLastUpdated": false
+    }
+  },
+  "dataSources": {
+    "ds_overview": {
+      "type": "ds.search",
+      "name": "Filtered unique lab telemetry — overview",
+      "options": {
+        "query": "index=wise_data\n| spath\n| spath path=host output=endpoint\n| search dataset_id=\"SN-INV-2026-1125\"\n| eval endpoint=coalesce(endpoint,\"unknown\"), severity=lower(coalesce(severity,\"unknown\")), alert_flag=if(lower(tostring(is_alert))=\"true\" OR event_type=\"alert\",1,0), case_id=if(case_id=\"null\",null(),case_id)\n| search endpoint=\"$endpoint$\" severity=\"$severity_filter$\"\n| dedup event_id\n| fields _time event_id endpoint user vendor product severity action category case_id alert_flag alert_id alert_name signature src_ip dest_ip dest_port protocol mitre_technique process_name parent_process_name classification bytes_out file_name mfa_result"
+      }
+    },
+    "ds_evidence": {
+      "type": "ds.search",
+      "name": "Filtered unique lab telemetry — evidence",
+      "options": {
+        "query": "index=wise_data\n| spath\n| spath path=host output=endpoint\n| search dataset_id=\"SN-INV-2026-1125\"\n| eval endpoint=coalesce(endpoint,\"unknown\"), severity=lower(coalesce(severity,\"unknown\")), alert_flag=if(lower(tostring(is_alert))=\"true\" OR event_type=\"alert\",1,0), case_id=if(case_id=\"null\",null(),case_id)\n| search endpoint=\"$endpoint$\" severity=\"$severity_filter$\"\n| dedup event_id\n| fields _time event_id endpoint user vendor product severity action category case_id alert_flag alert_id alert_name signature src_ip dest_ip dest_port protocol mitre_technique process_name parent_process_name classification bytes_out file_name mfa_result"
+      }
+    },
+    "ds_total": {
+      "type": "ds.chain",
+      "name": "Unique events",
+      "options": {
+        "extend": "ds_overview",
+        "query": "| stats count as Events"
+      }
+    },
+    "ds_products": {
+      "type": "ds.chain",
+      "name": "Security products",
+      "options": {
+        "extend": "ds_overview",
+        "query": "| stats dc(product) as Products"
+      }
+    },
+    "ds_alerts": {
+      "type": "ds.chain",
+      "name": "Designated alerts",
+      "options": {
+        "extend": "ds_overview",
+        "query": "| stats count(eval(alert_flag=1)) as Alerts"
+      }
+    },
+    "ds_high": {
+      "type": "ds.chain",
+      "name": "High-severity alerts",
+      "options": {
+        "extend": "ds_overview",
+        "query": "| stats count(eval(alert_flag=1 AND severity=\"high\")) as High_alerts"
+      }
+    },
+    "ds_timeline": {
+      "type": "ds.chain",
+      "name": "Event activity over time",
+      "options": {
+        "extend": "ds_overview",
+        "query": "| timechart bins=48 count by severity"
+      }
+    },
+    "ds_severity": {
+      "type": "ds.chain",
+      "name": "Events by severity",
+      "options": {
+        "extend": "ds_overview",
+        "query": "| stats count as Events by severity | sort - Events"
+      }
+    },
+    "ds_products_chart": {
+      "type": "ds.chain",
+      "name": "Telemetry by security product",
+      "options": {
+        "extend": "ds_overview",
+        "query": "| stats count as Events by product | sort - Events"
+      }
+    },
+    "ds_activity": {
+      "type": "ds.chain",
+      "name": "Background vs correlated evidence",
+      "options": {
+        "extend": "ds_overview",
+        "query": "| eval Activity=if(isnotnull(case_id),\"Correlated case events\",\"Background activity\") | stats count as Events by Activity | sort - Events"
+      }
+    },
+    "ds_alert_table": {
+      "type": "ds.chain",
+      "name": "Alert triage queue",
+      "options": {
+        "extend": "ds_evidence",
+        "query": "| where alert_flag=1 | sort 0 - _time | table _time alert_id severity endpoint user alert_name | rename endpoint as Host alert_name as \"Alert name\""
+      }
+    },
+    "ds_mitre": {
+      "type": "ds.chain",
+      "name": "MITRE ATT&CK technique tags",
+      "options": {
+        "extend": "ds_evidence",
+        "query": "| where isnotnull(mitre_technique) | stats count as Events by mitre_technique | sort - Events"
+      }
+    },
+    "ds_network": {
+      "type": "ds.chain",
+      "name": "Network and data-control evidence",
+      "options": {
+        "extend": "ds_evidence",
+        "query": "| search category=network OR category=data | search action=blocked OR action=denied OR case_id=* | sort 0 - _time | table _time endpoint product action src_ip dest_ip dest_port bytes_out signature"
+      }
+    },
+    "ds_case_table": {
+      "type": "ds.chain",
+      "name": "Correlated case timeline",
+      "options": {
+        "extend": "ds_evidence",
+        "query": "| where isnotnull(case_id) | sort 0 _time | table _time case_id endpoint product severity action signature process_name parent_process_name mfa_result | rename endpoint as Host"
+      }
+    }
+  },
+  "layout": {
+    "globalInputs": [
+      "input_time",
+      "input_host",
+      "input_severity"
+    ],
+    "options": {
+      "showTitleAndDescription": true
+    },
+    "layoutDefinitions": {
+      "layout_1": {
+        "type": "absolute",
+        "options": {
+          "display": "auto-scale",
+          "width": 1440,
+          "height": 1812,
+          "backgroundColor": "#111827"
+        },
+        "structure": [
+          {
+            "item": "viz_section_overview",
+            "type": "block",
+            "position": {
+              "x": 16,
+              "y": 12,
+              "w": 1408,
+              "h": 32
+            }
+          },
+          {
+            "item": "viz_total",
+            "type": "block",
+            "position": {
+              "x": 16,
+              "y": 52,
+              "w": 343,
+              "h": 120
+            }
+          },
+          {
+            "item": "viz_products",
+            "type": "block",
+            "position": {
+              "x": 371,
+              "y": 52,
+              "w": 343,
+              "h": 120
+            }
+          },
+          {
+            "item": "viz_alerts",
+            "type": "block",
+            "position": {
+              "x": 726,
+              "y": 52,
+              "w": 343,
+              "h": 120
+            }
+          },
+          {
+            "item": "viz_high",
+            "type": "block",
+            "position": {
+              "x": 1081,
+              "y": 52,
+              "w": 343,
+              "h": 120
+            }
+          },
+          {
+            "item": "viz_timeline",
+            "type": "block",
+            "position": {
+              "x": 16,
+              "y": 184,
+              "w": 936,
+              "h": 300
+            }
+          },
+          {
+            "item": "viz_severity",
+            "type": "block",
+            "position": {
+              "x": 964,
+              "y": 184,
+              "w": 460,
+              "h": 300
+            }
+          },
+          {
+            "item": "viz_products_chart",
+            "type": "block",
+            "position": {
+              "x": 16,
+              "y": 496,
+              "w": 700,
+              "h": 320
+            }
+          },
+          {
+            "item": "viz_activity",
+            "type": "block",
+            "position": {
+              "x": 728,
+              "y": 496,
+              "w": 696,
+              "h": 320
+            }
+          },
+          {
+            "item": "viz_section_evidence",
+            "type": "block",
+            "position": {
+              "x": 16,
+              "y": 832,
+              "w": 1408,
+              "h": 32
+            }
+          },
+          {
+            "item": "viz_alert_table",
+            "type": "block",
+            "position": {
+              "x": 16,
+              "y": 872,
+              "w": 1408,
+              "h": 240
+            }
+          },
+          {
+            "item": "viz_mitre",
+            "type": "block",
+            "position": {
+              "x": 16,
+              "y": 1124,
+              "w": 460,
+              "h": 260
+            }
+          },
+          {
+            "item": "viz_network",
+            "type": "block",
+            "position": {
+              "x": 488,
+              "y": 1124,
+              "w": 936,
+              "h": 260
+            }
+          },
+          {
+            "item": "viz_case_table",
+            "type": "block",
+            "position": {
+              "x": 16,
+              "y": 1396,
+              "w": 1408,
+              "h": 400
+            }
+          }
+        ]
+      }
+    },
+    "tabs": {
+      "items": [
+        {
+          "label": "SOC overview",
+          "layoutId": "layout_1"
+        }
+      ]
+    }
+  }
+}
